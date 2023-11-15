@@ -61,8 +61,8 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         sheet[f'B{row}'] = detection_status
         row += 1  # Increment the row
 
-        # Break the loop if the stop flag is True
-        if stop_flag:
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     # Save the Excel workbook
