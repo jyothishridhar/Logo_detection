@@ -62,11 +62,15 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         row += 1  # Increment the row
 
         # Break the loop if 'q' is pressed
-        if st.button("Stop Detection"):
+        if st.button(f"Stop Detection {frame_number}"):
+            break
+
+        # Check the stop_flag to stop detection
+        if stop_flag:
             break
 
     # Save the Excel workbook
-    report_path = 'C:\\OTT_Logo_detect\\logo_detection_report.xlsx'  # Path to save the Excel report
+    report_path = 'C:\\OTT_Logo_detect_stream\\logo_detection_report.xlsx'  # Path to save the Excel report
     workbook.save(report_path)
     return report_path  # Return the path for downloading
 
@@ -76,7 +80,7 @@ st.title("Logo Detection Demo")
 logo_path = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
 video_path = st.file_uploader("Upload Video File", type=["mp4"])
 
-stop_flag = st.checkbox("Stop Detection")
+stop_flag = False
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
@@ -100,5 +104,3 @@ if st.button("Run Demo"):
         os.unlink(video_path)
     else:
         st.warning("Please upload both the logo and video files.")
-
-st.text("Note: This is a simplified example. Adjust the paths and parameters as needed.")
