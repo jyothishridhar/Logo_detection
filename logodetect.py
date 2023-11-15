@@ -70,8 +70,7 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path):
             break
 
     # Save the Excel workbook
-    report_path = os.path.join(os.getcwd(), report_filename)  # Save in the current working directory
-    workbook.save(report_path)  # Return the path for downloading
+    workbook.save(report_path)  # Use the provided report_path
 
     # Print the current working directory
     st.write(f"Current working directory: {os.getcwd()}")
