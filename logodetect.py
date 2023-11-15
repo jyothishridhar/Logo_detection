@@ -4,7 +4,7 @@ import streamlit as st
 from tempfile import NamedTemporaryFile
 import os
 
-def run_logo_detection(logo_path, video_path, stop_flag, report_path):
+def run_logo_detection(logo_path, video_path, stop_flag):
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
@@ -70,12 +70,14 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path):
             break
 
     # Save the Excel workbook
-    workbook.save(report_path)  # Use the provided report_path
+    report_filename = 'logo_detection_report.xlsx'
+    result_path = os.path.join(os.getcwd(), report_filename)
+    workbook.save(result_path)  # Save in the current working directory
 
     # Print the current working directory
     st.write(f"Current working directory: {os.getcwd()}")
 
-    return report_path
+    return result_path
 
 # Streamlit app code
 st.title("Logo Detection Demo")
