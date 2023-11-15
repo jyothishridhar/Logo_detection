@@ -68,8 +68,8 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder
 
     # Save the Excel workbook
     report_filename = 'logo_detection_report.xlsx'
-    result_path = os.path.join(os.getcwd(), report_filename)
-    workbook.save(result_path)  # Save in the current working directory
+    result_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), report_filename)
+    workbook.save(result_path)  # Save in the script's directory
 
     # Update the placeholder content
     report_path_placeholder.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
