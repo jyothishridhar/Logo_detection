@@ -72,7 +72,8 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     # Save the Excel workbook
     report_filename = 'logo_detection_report.xlsx'
     report_path = os.path.join(os.getcwd(), report_filename)  # Save in the current working directory
-    workbook.save(report_path)# Return the path for downloading
+    workbook.save(report_path)  # Return the path for downloading
+    return report_path
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -98,7 +99,6 @@ if st.button("Run Demo"):
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
         st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
-
 
         # Clean up temporary files
         os.unlink(logo_path)
