@@ -5,6 +5,7 @@ from tempfile import NamedTemporaryFile
 import os
 
 def run_logo_detection(logo_path, video_path, stop_flag):
+    print("Starting logo detection...")
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
@@ -75,9 +76,11 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     workbook.save(result_path)  # Save in the current working directory
 
     # Print the current working directory
-    st.write(f"Current working directory: {os.getcwd()}")
+    print(f"Current working directory: {os.getcwd()}")
 
+    print("Logo detection completed.")
     return result_path
+
 
 # Streamlit app code
 st.title("Logo Detection Demo")
