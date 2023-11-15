@@ -4,7 +4,7 @@ import streamlit as st
 from tempfile import NamedTemporaryFile
 import os
 
-def run_logo_detection(logo_path, video_path):
+def run_logo_detection(logo_path, video_path, stop_flag):
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
@@ -61,8 +61,8 @@ def run_logo_detection(logo_path, video_path):
         sheet[f'B{row}'] = detection_status
         row += 1  # Increment the row
 
-        # Break the loop if 'q' is pressed
-        if st.button("Stop Detection"):
+        # Break the loop if the stop flag is True
+        if stop_flag:
             break
 
     # Save the Excel workbook
@@ -76,6 +76,8 @@ st.title("Logo Detection Demo")
 logo_path = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
 video_path = st.file_uploader("Upload Video File", type=["mp4"])
 
+stop_flag = st.checkbox("Stop Detection")
+
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
         # Save the logo and video locally
@@ -87,7 +89,7 @@ if st.button("Run Demo"):
             temp_video.write(video_path.read())
             video_path = temp_video.name
 
-        result_path = run_logo_detection(logo_path, video_path)
+        result_path = run_logo_detection(logo_path, video_path, stop_flag)
 
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
