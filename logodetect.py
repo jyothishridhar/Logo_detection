@@ -70,9 +70,9 @@ def run_logo_detection(logo_path, video_path, stop_flag):
             break
 
     # Save the Excel workbook
-    report_path = 'C:\\OTT_Logo_detect_stream\\logo_detection_report.xlsx'  # Path to save the Excel report
-    workbook.save(report_path)
-    return report_path  # Return the path for downloading
+    report_filename = 'logo_detection_report.xlsx'
+    report_path = os.path.join(os.getcwd(), report_filename)  # Save in the current working directory
+    workbook.save(report_path)# Return the path for downloading
 
 # Streamlit app code
 st.title("Logo Detection Demo")
