@@ -4,7 +4,7 @@ import streamlit as st
 from tempfile import NamedTemporaryFile
 import os
 
-def run_logo_detection(logo_path, video_path, stop_flag):
+def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder):
     print("Starting logo detection...")
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
@@ -62,12 +62,8 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         sheet[f'B{row}'] = detection_status
         row += 1  # Increment the row
 
-        # Break the loop if 'q' is pressed
-        if st.button(f"Stop Detection {frame_number}"):
-            break
-
         # Check the stop_flag to stop detection
-        if stop_flag:
+        if stop_flag[0]:
             break
 
     # Save the Excel workbook
@@ -75,12 +71,11 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     result_path = os.path.join(os.getcwd(), report_filename)
     workbook.save(result_path)  # Save in the current working directory
 
-    # Print the current working directory
-    print(f"Current working directory: {os.getcwd()}")
-
+    # Update the placeholder content
+    report_path_placeholder.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
+    
     print("Logo detection completed.")
     return result_path
-
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -88,7 +83,7 @@ st.title("Logo Detection Demo")
 logo_path = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
 video_path = st.file_uploader("Upload Video File", type=["mp4"])
 
-stop_flag = False
+stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
@@ -105,11 +100,13 @@ if st.button("Run Demo"):
         report_filename = 'logo_detection_report.xlsx'
         result_path = os.path.join(os.getcwd(), report_filename)
 
-        result_path = run_logo_detection(logo_path, video_path, stop_flag, result_path)
+        # Create a placeholder for the report path
+        report_path_placeholder = st.empty()
+
+        result_path = run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder)
 
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
-        st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
 
         # Clean up temporary files
         os.unlink(logo_path)
