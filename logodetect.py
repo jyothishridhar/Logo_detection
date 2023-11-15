@@ -97,7 +97,8 @@ if st.button("Run Demo"):
 
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
-        st.download_button("Download Result", result_path, key="result_download")
+        st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
+
 
         # Clean up temporary files
         os.unlink(logo_path)
