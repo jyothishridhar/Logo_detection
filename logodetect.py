@@ -4,7 +4,7 @@ import streamlit as st
 from tempfile import NamedTemporaryFile
 import os
 
-def run_logo_detection(logo_path, video_path, stop_flag):
+def run_logo_detection(logo_path, video_path, stop_flag, report_path):
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
@@ -70,8 +70,6 @@ def run_logo_detection(logo_path, video_path, stop_flag):
             break
 
     # Save the Excel workbook
-    report_filename = 'logo_detection_report.xlsx'
-    report_path = os.path.join(os.getcwd(), report_filename)  # Save in the current working directory
     workbook.save(report_path)  # Return the path for downloading
     return report_path
 
@@ -94,7 +92,11 @@ if st.button("Run Demo"):
             temp_video.write(video_path.read())
             video_path = temp_video.name
 
-        result_path = run_logo_detection(logo_path, video_path, stop_flag)
+        # Specify the directory to save the report
+        report_filename = 'logo_detection_report.xlsx'
+        result_path = os.path.join(os.getcwd(), report_filename)
+
+        result_path = run_logo_detection(logo_path, video_path, stop_flag, result_path)
 
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
