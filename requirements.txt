@@ -191,3 +191,6 @@ wsproto==1.2.0
 XlsxWriter==3.1.2
 yarg==0.1.9
 zipp==3.17.0
+opencv-python-headless==4.5.3.56
+streamlit==1.18.0
+
