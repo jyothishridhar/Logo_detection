@@ -4,5 +4,5 @@ opencv-python==4.7.0.72
 openpyxl==3.1.2
 pyinstaller==5.13.0
 pyinstaller-hooks-contrib==2023.5
-opencv-python-headless==4.5.3
+opencv-python-headless==4.8.1.78
 streamlit==1.28.2
