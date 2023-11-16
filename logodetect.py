@@ -11,7 +11,9 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     st.write("Starting logo detection...")
 
     # Read the logo image from the file uploader
-    logo = cv2.imdecode(np.frombuffer(logo_path.read(), np.uint8), cv2.IMREAD_COLOR)
+    logo_bytes = logo_path.read()
+    logo_np = np.frombuffer(logo_bytes, np.uint8)
+    logo = cv2.imdecode(logo_np, cv2.IMREAD_COLOR)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
@@ -109,7 +111,7 @@ if st.button("Run Demo"):
 
         # Create a download button for the Excel file
         if st.button("Download Result"):
-            st.markdown(f"Download the result: [logo_detection_report.xlsx](data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(result_file.getvalue()).decode()})")
+            st.download_button(label="Download Result", data=result_file.getvalue(), file_name="logo_detection_report.xlsx", key="result_file")
 
         # Clean up
         result_file.close()
