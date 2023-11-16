@@ -102,12 +102,11 @@ if st.button("Run Demo"):
         st.success("Demo completed! Result saved to a temporary file.")
         
         # Create a download button
-        download_button = st.download_button(
-            label="Download Result",
-            key="download_button",
-            on_click=None,  # You can add custom logic here if needed
-            args=(result_path,),
-            help="Click to download the result.",
-        )
+        if st.button("Download Result"):
+            st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
+
+        # Clean up temporary files
+        os.unlink(logo_path)
+        os.unlink(video_path)
     else:
         st.warning("Please upload both the logo and video files.")
