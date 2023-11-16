@@ -70,6 +70,10 @@ def run_logo_detection(logo_path, video_path, stop_flag):
             logo_detected = False
             detection_status = 'Logo Not Detected'
 
+        # Display the frame with logo detection status and frame number
+        st.image(frame, channels="BGR")
+        st.write(f'Detection Status: {detection_status}, Frame: {frame_number}')
+
         # Write the frame number and logo detection status to the Excel sheet
         sheet[f'A{row}'] = frame_number
         sheet[f'B{row}'] = detection_status
@@ -105,7 +109,7 @@ if st.button("Run Demo"):
         st.success("Demo completed! Result:")
 
         # Display the DataFrame
-        st.write(sheet)
+        st.dataframe(sheet)
 
         # Provide a download link for the Excel file
         st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
