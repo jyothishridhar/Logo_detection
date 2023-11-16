@@ -4,10 +4,13 @@ import streamlit as st
 import os
 import numpy as np
 from io import BytesIO
+import base64  # Add this import
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     print("Starting logo detection...")
-    logo = cv2.imread(logo_path)
+    
+    # Read the logo image from the file uploader
+    logo = cv2.imdecode(np.frombuffer(logo_path.read(), np.uint8), cv2.IMREAD_COLOR)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
