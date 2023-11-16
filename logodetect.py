@@ -89,16 +89,12 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        # Convert the logo and video to temporary images
-        temp_logo = cv2.imencode('.png', np.frombuffer(logo_path.read(), np.uint8))[1].tostring()
-        temp_video = cv2.imencode('.mp4', np.frombuffer(video_path.read(), np.uint8))[1].tostring()
-
         # Save the logo and video locally
         with open("temp_logo.png", "wb") as f:
-            f.write(temp_logo)
+            f.write(logo_path.read())
 
         with open("temp_video.mp4", "wb") as f:
-            f.write(temp_video)
+            f.write(video_path.read())
 
         # Specify the directory to save the report
         report_filename = 'logo_detection_report.xlsx'
