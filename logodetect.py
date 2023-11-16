@@ -5,6 +5,7 @@ import os
 import numpy as np
 from io import BytesIO
 import base64
+import tempfile
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     print("Starting logo detection...")
@@ -15,10 +16,13 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
 
-    # Read the video file from the file uploader
-    video_content = video_path.read()
-    video_stream = BytesIO(video_content)
-    cap = cv2.VideoCapture(video_stream)
+    # Save the video file locally
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
+        temp_video.write(video_path.read())
+        video_path = temp_video.name
+
+    # Open the locally saved video file
+    cap = cv2.VideoCapture(video_path)
     frame_number = 0
 
     # Create an Excel workbook and sheet
@@ -78,6 +82,9 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     # Save the Excel workbook to a BytesIO object
     result_file = BytesIO()
     workbook.save(result_file)
+
+    # Clean up the temporary video file
+    os.unlink(video_path)
 
     print("Logo detection completed.")
     return result_file
