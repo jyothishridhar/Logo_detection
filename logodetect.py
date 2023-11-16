@@ -3,8 +3,6 @@ from openpyxl import Workbook
 import streamlit as st
 import os
 import numpy as np
-from io import BytesIO
-import base64
 import tempfile
 
 def run_logo_detection(logo_path, video_path, stop_flag):
@@ -81,15 +79,15 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         if stop_flag[0]:
             break
 
-    # Save the Excel workbook to a BytesIO object
-    result_file = BytesIO()
-    workbook.save(result_file)
+    # Save the Excel workbook
+    result_path = os.path.join(os.getcwd(), "logo_detection_report.xlsx")
+    workbook.save(result_path)
 
     # Clean up the temporary video file
     os.unlink(video_path)
 
     st.write("Logo detection completed.")
-    return result_file, sheet
+    return result_path, sheet
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -101,7 +99,7 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        result_file, sheet = run_logo_detection(logo_path, video_path, stop_flag)
+        result_path, sheet = run_logo_detection(logo_path, video_path, stop_flag)
 
         # Display the result on the app
         st.success("Demo completed! Result:")
@@ -109,11 +107,7 @@ if st.button("Run Demo"):
         # Display the DataFrame
         st.write(sheet)
 
-        # Create a download button for the Excel file
-        if st.button("Download Result"):
-            st.download_button(label="Download Result", data=result_file.getvalue(), file_name="logo_detection_report.xlsx", key="result_file")
-
-        # Clean up
-        result_file.close()
+        # Provide a download link for the Excel file
+        st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
     else:
         st.warning("Please upload both the logo and video files.")
