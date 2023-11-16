@@ -3,7 +3,7 @@ from openpyxl import Workbook
 import streamlit as st
 import os
 import numpy as np
-import tempfile
+from io import BytesIO
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     print("Starting logo detection...")
@@ -69,14 +69,12 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         if stop_flag[0]:
             break
 
-    # Save the Excel workbook to a temporary file
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
-    result_path = temp_file.name
-    workbook.save(result_path)  # Save in the temporary file
-    temp_file.close()  # Close the file to avoid deletion
+    # Save the Excel workbook to a BytesIO object
+    result_file = BytesIO()
+    workbook.save(result_file)
 
     print("Logo detection completed.")
-    return result_path
+    return result_file
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -88,26 +86,16 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        # Save the logo and video locally
-        temp_logo = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
-        temp_logo.write(logo_path.read())
-        logo_path = temp_logo.name
-
-        temp_video = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-        temp_video.write(video_path.read())
-        video_path = temp_video.name
-
-        result_path = run_logo_detection(logo_path, video_path, stop_flag)
+        result_file = run_logo_detection(logo_path, video_path, stop_flag)
 
         # Display the result and provide a download button
         st.success("Demo completed! Result saved to a temporary file.")
         
         # Create a download button
         if st.button("Download Result"):
-            st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
+            st.markdown(f"Download the result: [logo_detection_report.xlsx](data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(result_file.getvalue()).decode()})")
 
-        # Clean up temporary files
-        os.unlink(logo_path)
-        os.unlink(video_path)
+        # Clean up
+        result_file.close()
     else:
         st.warning("Please upload both the logo and video files.")
