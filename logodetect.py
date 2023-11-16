@@ -8,7 +8,7 @@ import base64
 import tempfile
 
 def run_logo_detection(logo_path, video_path, stop_flag):
-    print("Starting logo detection...")
+    st.write("Starting logo detection...")
 
     # Read the logo image from the file uploader
     logo = cv2.imdecode(np.frombuffer(logo_path.read(), np.uint8), cv2.IMREAD_COLOR)
@@ -60,7 +60,7 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         # Filter out the good matches based on the threshold
         good_matches = [match for match in matches if match.distance < threshold * len(matches)]
 
-        print(f"Frame: {frame_number}, Good Matches: {len(good_matches)}")
+        st.write(f"Frame: {frame_number}, Good Matches: {len(good_matches)}")
 
         # If enough good matches are found, consider the logo is detected
         if len(good_matches) > 10:  # Adjust the threshold value as per your requirement
@@ -86,7 +86,7 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     # Clean up the temporary video file
     os.unlink(video_path)
 
-    print("Logo detection completed.")
+    st.write("Logo detection completed.")
     return result_file, sheet
 
 # Streamlit app code
