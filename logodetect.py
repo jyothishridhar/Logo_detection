@@ -107,8 +107,8 @@ if st.button("Run Demo"):
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
 
-        # Clean up temporary files
-        os.unlink(logo_path)
-        os.unlink(video_path)
+        # Clean up temporary files (moved to a later point)
+        # os.unlink(logo_path)
+        # os.unlink(video_path)
     else:
         st.warning("Please upload both the logo and video files.")
