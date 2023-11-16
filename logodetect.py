@@ -4,18 +4,21 @@ import streamlit as st
 import os
 import numpy as np
 from io import BytesIO
-import base64  # Add this import
+import base64
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     print("Starting logo detection...")
-    
+
     # Read the logo image from the file uploader
     logo = cv2.imdecode(np.frombuffer(logo_path.read(), np.uint8), cv2.IMREAD_COLOR)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
 
-    cap = cv2.VideoCapture(video_path)
+    # Read the video file from the file uploader
+    video_content = video_path.read()
+    video_stream = BytesIO(video_content)
+    cap = cv2.VideoCapture(video_stream)
     frame_number = 0
 
     # Create an Excel workbook and sheet
