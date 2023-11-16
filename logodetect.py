@@ -70,9 +70,10 @@ def run_logo_detection(logo_path, video_path, stop_flag):
             break
 
     # Save the Excel workbook to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as temp_file:
-        result_path = temp_file.name
-        workbook.save(result_path)  # Save in the temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+    result_path = temp_file.name
+    workbook.save(result_path)  # Save in the temporary file
+    temp_file.close()  # Close the file to avoid deletion
 
     print("Logo detection completed.")
     return result_path
@@ -88,13 +89,13 @@ stop_flag = [False]  # Using a list to make it mutable
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
         # Save the logo and video locally
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as temp_logo:
-            temp_logo.write(logo_path.read())
-            logo_path = temp_logo.name
+        temp_logo = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+        temp_logo.write(logo_path.read())
+        logo_path = temp_logo.name
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-            temp_video.write(video_path.read())
-            video_path = temp_video.name
+        temp_video = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+        temp_video.write(video_path.read())
+        video_path = temp_video.name
 
         result_path = run_logo_detection(logo_path, video_path, stop_flag)
 
