@@ -49,6 +49,8 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder
         # Filter out the good matches based on the threshold
         good_matches = [match for match in matches if match.distance < threshold * len(matches)]
 
+        print(f"Frame: {frame_number}, Good Matches: {len(good_matches)}")
+
         # If enough good matches are found, consider the logo is detected
         if len(good_matches) > 10:  # Adjust the threshold value as per your requirement
             logo_detected = True
@@ -73,9 +75,10 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder
 
     # Update the placeholder content
     report_path_placeholder.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
-    
+
     print("Logo detection completed.")
     return result_path
+
 
 # Streamlit app code
 st.title("Logo Detection Demo")
