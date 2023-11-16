@@ -4,6 +4,7 @@ import streamlit as st
 import os
 import numpy as np
 import tempfile
+import pandas as pd
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     st.write("Starting logo detection...")
@@ -25,14 +26,9 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     cap = cv2.VideoCapture(video_path)
     frame_number = 0
 
-    # Create an Excel workbook and sheet
-    workbook = Workbook()
-    sheet = workbook.active
-
-    # Write headers to the sheet
-    sheet['A1'] = 'Frame Number'
-    sheet['B1'] = 'Logo Detection Status'
-    row = 2  # Start from the second row for data
+    # Lists to store frame numbers and detection status
+    frame_numbers = []
+    detection_statuses = []
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -70,28 +66,28 @@ def run_logo_detection(logo_path, video_path, stop_flag):
             logo_detected = False
             detection_status = 'Logo Not Detected'
 
+        # Append frame number and detection status to the lists
+        frame_numbers.append(frame_number)
+        detection_statuses.append(detection_status)
+
         # Display the frame with logo detection status and frame number
         st.image(frame, channels="BGR")
         st.write(f'Detection Status: {detection_status}, Frame: {frame_number}')
-
-        # Write the frame number and logo detection status to the Excel sheet
-        sheet[f'A{row}'] = frame_number
-        sheet[f'B{row}'] = detection_status
-        row += 1  # Increment the row
 
         # Check the stop_flag to stop detection
         if stop_flag[0]:
             break
 
     # Save the Excel workbook
+    result_df = pd.DataFrame({'Frame Number': frame_numbers, 'Logo Detection Status': detection_statuses})
     result_path = os.path.join(os.getcwd(), "logo_detection_report.xlsx")
-    workbook.save(result_path)
+    result_df.to_excel(result_path, index=False)
 
     # Clean up the temporary video file
     os.unlink(video_path)
 
     st.write("Logo detection completed.")
-    return result_path, sheet
+    return result_path, result_df
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -103,13 +99,13 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        result_path, sheet = run_logo_detection(logo_path, video_path, stop_flag)
+        result_path, result_df = run_logo_detection(logo_path, video_path, stop_flag)
 
         # Display the result on the app
         st.success("Demo completed! Result:")
 
         # Display the DataFrame
-        st.dataframe(sheet)
+        st.dataframe(result_df)
 
         # Provide a download link for the Excel file
         st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
