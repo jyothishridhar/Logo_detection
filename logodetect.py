@@ -1,8 +1,8 @@
 import cv2
 from openpyxl import Workbook
 import streamlit as st
-from tempfile import NamedTemporaryFile
 import os
+import numpy as np
 
 def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder):
     print("Starting logo detection...")
@@ -79,7 +79,6 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder
     print("Logo detection completed.")
     return result_path
 
-
 # Streamlit app code
 st.title("Logo Detection Demo")
 
@@ -90,14 +89,16 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        # Save the logo and video locally
-        with NamedTemporaryFile(delete=False, suffix=".png") as temp_logo:
-            temp_logo.write(logo_path.read())
-            logo_path = temp_logo.name
+        # Convert the logo and video to temporary images
+        temp_logo = cv2.imencode('.png', np.frombuffer(logo_path.read(), np.uint8))[1].tostring()
+        temp_video = cv2.imencode('.mp4', np.frombuffer(video_path.read(), np.uint8))[1].tostring()
 
-        with NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-            temp_video.write(video_path.read())
-            video_path = temp_video.name
+        # Save the logo and video locally
+        with open("temp_logo.png", "wb") as f:
+            f.write(temp_logo)
+
+        with open("temp_video.mp4", "wb") as f:
+            f.write(temp_video)
 
         # Specify the directory to save the report
         report_filename = 'logo_detection_report.xlsx'
@@ -106,13 +107,13 @@ if st.button("Run Demo"):
         # Create a placeholder for the report path
         report_path_placeholder = st.empty()
 
-        result_path = run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder)
+        result_path = run_logo_detection("temp_logo.png", "temp_video.mp4", stop_flag, report_path_placeholder)
 
         # Display the result and provide a download link
         st.success(f"Demo completed! Result saved to: {result_path}")
 
         # Clean up temporary files
-        os.unlink(logo_path)
-        os.unlink(video_path)
+        os.unlink("temp_logo.png")
+        os.unlink("temp_video.mp4")
     else:
         st.warning("Please upload both the logo and video files.")
