@@ -5,7 +5,7 @@ import os
 import numpy as np
 import tempfile
 
-def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder):
+def run_logo_detection(logo_path, video_path, stop_flag):
     print("Starting logo detection...")
     logo = cv2.imread(logo_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
@@ -69,13 +69,10 @@ def run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder
         if stop_flag[0]:
             break
 
-    # Save the Excel workbook
+    # Save the Excel workbook to a temporary file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as temp_file:
         result_path = temp_file.name
         workbook.save(result_path)  # Save in the temporary file
-
-    # Update the placeholder content
-    report_path_placeholder.markdown(f"Download the result: [{result_path}]({result_path})")
 
     print("Logo detection completed.")
     return result_path
@@ -99,16 +96,18 @@ if st.button("Run Demo"):
             temp_video.write(video_path.read())
             video_path = temp_video.name
 
-        # Create a placeholder for the report path
-        report_path_placeholder = st.empty()
+        result_path = run_logo_detection(logo_path, video_path, stop_flag)
 
-        result_path = run_logo_detection(logo_path, video_path, stop_flag, report_path_placeholder)
-
-        # Display the result and provide a download link
-        st.success(f"Demo completed! Result saved to: {result_path}")
-
-        # Clean up temporary files (moved to a later point)
-        # os.unlink(logo_path)
-        # os.unlink(video_path)
+        # Display the result and provide a download button
+        st.success("Demo completed! Result saved to a temporary file.")
+        
+        # Create a download button
+        download_button = st.download_button(
+            label="Download Result",
+            key="download_button",
+            on_click=None,  # You can add custom logic here if needed
+            args=(result_path,),
+            help="Click to download the result.",
+        )
     else:
         st.warning("Please upload both the logo and video files.")
