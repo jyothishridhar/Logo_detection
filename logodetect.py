@@ -50,16 +50,11 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         # Sort the matches by their distance
         matches = sorted(matches, key=lambda x: x.distance)
 
-        # Define a threshold to filter out the matches
-        threshold = 0.7
-
-        # Filter out the good matches based on the threshold
-        good_matches = [match for match in matches if match.distance < threshold * len(matches)]
-
-        st.write(f"Frame: {frame_number}, Good Matches: {len(good_matches)}")
+        # Display the frame number
+        st.write(f"Frame: {frame_number}")
 
         # If enough good matches are found, consider the logo is detected
-        if len(good_matches) > 10:  # Adjust the threshold value as per your requirement
+        if len(matches) > 10:  # Adjust the threshold value as per your requirement
             logo_detected = True
             detection_status = 'Logo Detected'
         else:
