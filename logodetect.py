@@ -87,7 +87,7 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     os.unlink(video_path)
 
     st.write("Logo detection completed.")
-    return result_path, result_df
+    return result_df
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -99,7 +99,7 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     if logo_path is not None and video_path is not None:
-        result_path, result_df = run_logo_detection(logo_path, video_path, stop_flag)
+        result_df = run_logo_detection(logo_path, video_path, stop_flag)
 
         # Display the result on the app
         st.success("Demo completed! Result:")
@@ -107,7 +107,5 @@ if st.button("Run Demo"):
         # Display the DataFrame
         st.dataframe(result_df)
 
-        # Provide a download link for the Excel file
-        st.markdown(f"Download the result: [logo_detection_report.xlsx]({result_path})")
     else:
         st.warning("Please upload both the logo and video files.")
