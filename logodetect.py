@@ -13,9 +13,15 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     logo_bytes = logo_path.read()
     logo_np = np.frombuffer(logo_bytes, np.uint8)
     logo = cv2.imdecode(logo_np, cv2.IMREAD_COLOR)
+
+    # Convert logo to grayscale
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
-    sift = cv2.SIFT_create()
-    keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
+
+    # Initialize ORB detector
+    orb = cv2.ORB_create()
+
+    # Find the keypoints and descriptors with ORB
+    keypoints_logo, descriptors_logo = orb.detectAndCompute(gray_logo, None)
 
     # Save the video file locally
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
@@ -40,21 +46,21 @@ def run_logo_detection(logo_path, video_path, stop_flag):
         # Convert the frame to grayscale
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Initialize the SIFT detector and compute the keypoints and descriptors for the frame
-        keypoints_frame, descriptors_frame = sift.detectAndCompute(gray_frame, None)
+        # Initialize ORB detector
+        keypoints_frame, descriptors_frame = orb.detectAndCompute(gray_frame, None)
 
-        # Match the descriptors between the logo and the frame
-        matcher = cv2.BFMatcher()
+        # Match the descriptors between the logo and the frame using BFMatcher
+        matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
         matches = matcher.match(descriptors_logo, descriptors_frame)
 
-        # Sort the matches by their distance
+        # Sort the matches by their distances
         matches = sorted(matches, key=lambda x: x.distance)
 
         # Define a threshold to filter out the matches
-        threshold = 0.7
+        threshold = 30  # Adjust the threshold value as per your requirement
 
         # Filter out the good matches based on the threshold
-        good_matches = [match for match in matches if match.distance < threshold * len(matches)]
+        good_matches = [match for match in matches if match.distance < threshold]
 
         st.write(f"Frame: {frame_number}, Good Matches: {len(good_matches)}")
 
