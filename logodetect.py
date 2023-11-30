@@ -1,36 +1,36 @@
 import cv2
-from openpyxl import Workbook
 import streamlit as st
-import os
 import numpy as np
-import tempfile
+import requests
+from io import BytesIO
 import pandas as pd
-import base64
+import tempfile
+import os
 
-def run_logo_detection(logo_content, video_content, stop_flag):
+def download_file(url, dest_path):
+    response = requests.get(url)
+    with open(dest_path, 'wb') as file:
+        file.write(response.content)
+
+def run_logo_detection(logo_url, video_url, stop_flag):
     st.write("Starting logo detection...")
 
-    # Create temporary files for logo and video
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as logo_file:
-        logo_file.write(logo_content.getvalue())
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as video_file:
-        video_file.write(video_content.getvalue())
-
-    # Display the logo image
-    st.image(logo_file.name, caption="Logo Image", use_column_width=True)
+    # Download the logo image
+    logo_dest_path = "logo.png"
+    download_file(logo_url, logo_dest_path)
 
     # Read the logo image from the file
-    logo = cv2.imread(logo_file.name)
+    logo = cv2.imread(logo_dest_path)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
 
-    # Display the reference video
-    st.video(video_file.name, format="video/mp4", start_time=0)
+    # Download the video file
+    video_dest_path = "video.mp4"
+    download_file(video_url, video_dest_path)
 
     # Open the locally saved video file
-    cap = cv2.VideoCapture(video_file.name)
+    cap = cv2.VideoCapture(video_dest_path)
     frame_number = 0
     # Lists to store frame numbers and detection status
     frame_numbers = []
@@ -77,26 +77,23 @@ def run_logo_detection(logo_content, video_content, stop_flag):
     result_path = os.path.join(os.getcwd(), "logo_detection_report.xlsx")
     result_df.to_excel(result_path, index=False)
     # Clean up the temporary video file
-    os.unlink(logo_file.name)
-    os.unlink(video_file.name)
+    os.unlink(logo_dest_path)
+    os.unlink(video_dest_path)
     st.write("Logo detection completed.")
     return result_df
 
 # Streamlit app code
 st.title("Logo Detection Demo")
 
-# Upload logo and video files
-logo_content = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
-video_content = st.file_uploader("Upload Reference Video", type=["mp4"])
+# Git LFS URLs for the logo and video
+logo_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/zee5_logo.png"
+video_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/concatenate_zee.mp4"
 
 stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
-    if logo_content and video_content:
-        result_df = run_logo_detection(logo_content, video_content, stop_flag)
-        # Display the result on the app
-        st.success("Demo completed! Result:")
-        # Display the DataFrame
-        st.dataframe(result_df)
-    else:
-        st.warning("Please upload both the logo and video files.")
+    result_df = run_logo_detection(logo_url, video_url, stop_flag)
+    # Display the result on the app
+    st.success("Demo completed! Result:")
+    # Display the DataFrame
+    st.dataframe(result_df)
