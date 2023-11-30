@@ -100,8 +100,8 @@ if st.button("Run Demo"):
     st.dataframe(result_df)
 
     # Provide download links for the video and report
-    st.markdown(f"### Download Video")
-    st.markdown(f"[Download Video](data:video/mp4;base64,{base64.b64encode(open(video_url, 'rb').read()).decode()})")
+st.markdown(f"### Download Video")
+st.markdown(f"[Download Video]({'https://github.com/jyothishridhar/Logo_detection/raw/master/concatenate_zee.mp4'})")
 
-    st.markdown(f"### Download Report")
-    st.markdown(f"[Download Report](data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(open(report_path, 'rb').read()).decode()})")
+st.markdown(f"### Download Report")
+st.markdown(f"[Download Report](data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(open(report_path, 'rb').read()).decode()})")
