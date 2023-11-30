@@ -7,7 +7,7 @@ import tempfile
 import pandas as pd
 import requests
 import io
-
+from io import BytesIO, io 
 
 def download_image(url):
     response = requests.get(url)
