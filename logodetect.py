@@ -6,7 +6,7 @@ import numpy as np
 import tempfile
 import pandas as pd
 import requests
-from io import BytesIO
+import io
 from io import BytesIO, io 
 
 def download_image(url):
