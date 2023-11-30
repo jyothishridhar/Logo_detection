@@ -6,8 +6,7 @@ import numpy as np
 import tempfile
 import pandas as pd
 import requests
-import io
-from io import BytesIO, io 
+from io import BytesIO  # Only import BytesIO from io
 
 def download_image(url):
     response = requests.get(url)
@@ -15,7 +14,7 @@ def download_image(url):
 
 def download_video(url):
     response = requests.get(url)
-    return io.BytesIO(response.content)
+    return BytesIO(response.content) 
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     st.write("Starting logo detection...")
