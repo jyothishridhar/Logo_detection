@@ -6,6 +6,7 @@ from io import BytesIO
 import pandas as pd
 import tempfile
 import os
+import base64
 
 def download_file(url, dest_path):
     response = requests.get(url)
