@@ -100,4 +100,10 @@ stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
     result_df = run_logo_detection(logo_path, video_path, stop_flag)
-    # Rest of the code remains unchanged
+    # Display the result on the app
+    st.success("Demo completed! Result:")
+ # Display the DataFrame
+    st.dataframe(result_df)
+else:
+    st.warning("Please upload both the logo and video files.")
+
