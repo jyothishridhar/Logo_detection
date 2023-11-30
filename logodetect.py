@@ -80,7 +80,7 @@ def run_logo_detection(logo_url, video_url, stop_flag):
     os.unlink(logo_dest_path)
     os.unlink(video_dest_path)
     st.write("Logo detection completed.")
-    return result_df
+    return result_df, result_path
 
 # Streamlit app code
 st.title("Logo Detection Demo")
@@ -92,8 +92,15 @@ video_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/concate
 stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
-    result_df = run_logo_detection(logo_url, video_url, stop_flag)
+    result_df, report_path = run_logo_detection(logo_url, video_url, stop_flag)
     # Display the result on the app
     st.success("Demo completed! Result:")
     # Display the DataFrame
     st.dataframe(result_df)
+
+    # Provide download links for the video and report
+    st.markdown(f"### Download Video")
+    st.markdown(f"[Download Video](data:video/mp4;base64,{base64.b64encode(open(video_dest_path, 'rb').read()).decode()})")
+
+    st.markdown(f"### Download Report")
+    st.markdown(f"[Download Report](data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{base64.b64encode(open(report_path, 'rb').read()).decode()})")
