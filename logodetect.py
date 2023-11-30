@@ -7,23 +7,30 @@ import tempfile
 import pandas as pd
 import base64
 
-def run_logo_detection(logo_path, video_path, stop_flag):
+def run_logo_detection(logo_content, video_content, stop_flag):
     st.write("Starting logo detection...")
 
+    # Create temporary files for logo and video
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as logo_file:
+        logo_file.write(logo_content.getvalue())
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as video_file:
+        video_file.write(video_content.getvalue())
+
     # Display the logo image
-    st.image(logo_path, caption="Logo Image", use_column_width=True)
+    st.image(logo_file.name, caption="Logo Image", use_column_width=True)
 
     # Read the logo image from the file
-    logo = cv2.imread(logo_path)
+    logo = cv2.imread(logo_file.name)
     gray_logo = cv2.cvtColor(logo, cv2.COLOR_BGR2GRAY)
     sift = cv2.SIFT_create()
     keypoints_logo, descriptors_logo = sift.detectAndCompute(gray_logo, None)
 
     # Display the reference video
-    st.video(video_path, format="video/mp4", start_time=0)
+    st.video(video_file.name, format="video/mp4", start_time=0)
 
     # Open the locally saved video file
-    cap = cv2.VideoCapture(video_path)
+    cap = cv2.VideoCapture(video_file.name)
     frame_number = 0
     # Lists to store frame numbers and detection status
     frame_numbers = []
@@ -70,29 +77,26 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     result_path = os.path.join(os.getcwd(), "logo_detection_report.xlsx")
     result_df.to_excel(result_path, index=False)
     # Clean up the temporary video file
-    os.unlink(video_path)
+    os.unlink(logo_file.name)
+    os.unlink(video_file.name)
     st.write("Logo detection completed.")
     return result_df
 
 # Streamlit app code
 st.title("Logo Detection Demo")
 
-# Git LFS URLs for the videos
-logo_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/zee5_logo.png"
-video_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/concatenate_zee.mp4"
-
-# Add download links for the logo and video
-logo_path = st.download_button("Download Logo Image", key="logo")
-video_path = st.download_button("Download Reference Video", key="video")
+# Upload logo and video files
+logo_content = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
+video_content = st.file_uploader("Upload Reference Video", type=["mp4"])
 
 stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
-    result_df = run_logo_detection(logo_path, video_path, stop_flag)
-    # Display the result on the app
-    st.success("Demo completed! Result:")
-    # Display the DataFrame
-    st.dataframe(result_df)
-else:
-    st.warning("Please download both the logo and video files.")
-
+    if logo_content and video_content:
+        result_df = run_logo_detection(logo_content, video_content, stop_flag)
+        # Display the result on the app
+        st.success("Demo completed! Result:")
+        # Display the DataFrame
+        st.dataframe(result_df)
+    else:
+        st.warning("Please upload both the logo and video files.")
