@@ -106,8 +106,8 @@ st.title("Logo Detection Demo")
 logo_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/zee5_logo.png"
 video_url = "https://github.com/jyothishridhar/Logo_detection/raw/master/concatenate_zee.mp4"
 
-logo_path = download_image(logo_url)
-video_path = download_video(video_url)
+logo_path = logo_url
+video_path = video_url
 
 stop_flag = [False]  # Using a list to make it mutable
 
