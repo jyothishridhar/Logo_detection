@@ -5,23 +5,13 @@ import os
 import numpy as np
 import tempfile
 import pandas as pd
-import requests
-from io import BytesIO
-
-def download_image(url):
-    response = requests.get(url)
-    return BytesIO(response.content)
-
-def download_video(url):
-    response = requests.get(url)
-    return BytesIO(response.content)
 
 def run_logo_detection(logo_path, video_path, stop_flag):
     st.write("Starting logo detection...")
 
-    # Read the logo image from the website
-    logo_bytes = download_image(logo_path)
-    logo_np = np.frombuffer(logo_bytes.getvalue(), np.uint8)
+    # Read the logo image from the file uploader
+    logo_bytes = logo_path.read()
+    logo_np = np.frombuffer(logo_bytes, np.uint8)
     logo = cv2.imdecode(logo_np, cv2.IMREAD_COLOR)
 
     # Convert logo to grayscale
@@ -33,12 +23,9 @@ def run_logo_detection(logo_path, video_path, stop_flag):
     # Find the keypoints and descriptors with ORB
     keypoints_logo, descriptors_logo = orb.detectAndCompute(gray_logo, None)
 
-    # Read the video file from the website
-    video_bytes = download_video(video_path)
-
     # Save the video file locally
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-        temp_video.write(video_bytes.getvalue())
+        temp_video.write(video_path.read())
         video_path = temp_video.name
 
     # Open the locally saved video file
@@ -111,16 +98,20 @@ def run_logo_detection(logo_path, video_path, stop_flag):
 # Streamlit app code
 st.title("Logo Detection Demo")
 
-logo_path = "https://github.com/jyothishridhar/Logo_detection/raw/master/zee5_logo.png"
-video_path = "https://github.com/jyothishridhar/Logo_detection/raw/master/concatenate_zee.mp4"
+logo_path = st.file_uploader("Upload Logo Image", type=["png", "jpg", "jpeg"])
+video_path = st.file_uploader("Upload Video File", type=["mp4"])
 
 stop_flag = [False]  # Using a list to make it mutable
 
 if st.button("Run Demo"):
-    result_df = run_logo_detection(logo_path, video_path, stop_flag)
+    if logo_path is not None and video_path is not None:
+        result_df = run_logo_detection(logo_path, video_path, stop_flag)
 
-    # Display the result on the app
-    st.success("Demo completed! Result:")
+        # Display the result on the app
+        st.success("Demo completed! Result:")
 
-    # Display the DataFrame
-    st.dataframe(result_df)
+        # Display the DataFrame
+        st.dataframe(result_df)
+
+    else:
+        st.warning("Please upload both the logo and video files.")
